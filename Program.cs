@@ -1,11 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOpenApi();
+
+// Убрали AddOpenApi, так как в .NET 8 его нет
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Убрали MapOpenApi
 
 app.UseHttpsRedirection();
 
@@ -21,16 +19,13 @@ app.MapGet("/version", (IConfiguration config) => Results.Json(new {
 var notes = new List<Note>();
 int nextId = 1;
 
-// GET /api/notes - список всех
 app.MapGet("/api/notes", () => Results.Json(notes));
 
-// GET /api/notes/{id} - одна заметка
 app.MapGet("/api/notes/{id}", (int id) => {
     var note = notes.FirstOrDefault(n => n.Id == id);
     return note is not null ? Results.Json(note) : Results.NotFound();
 });
 
-// POST /api/notes - создать
 app.MapPost("/api/notes", (NoteInput input) => {
     if (string.IsNullOrWhiteSpace(input.Title)) 
         return Results.BadRequest("Title is required");
@@ -40,7 +35,6 @@ app.MapPost("/api/notes", (NoteInput input) => {
     return Results.Created($"/api/notes/{newNote.Id}", newNote);
 });
 
-// DELETE /api/notes/{id} - удалить
 app.MapDelete("/api/notes/{id}", (int id) => {
     var note = notes.FirstOrDefault(n => n.Id == id);
     if (note is null) return Results.NotFound();
@@ -52,7 +46,6 @@ app.MapDelete("/api/notes/{id}", (int id) => {
 app.MapGet("/db/ping", (IConfiguration config) => {
     var connString = config.GetConnectionString("Mssql");
     if (string.IsNullOrEmpty(connString)) return Results.Json(new { status = "error", message = "Connection string not set" });
-    // Имитация попытки подключения
     return Results.Json(new { status = "ok", message = "Connection string found (DB not actually connected yet)" });
 });
 
