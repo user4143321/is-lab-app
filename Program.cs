@@ -12,7 +12,7 @@ app.MapGet("/health", () => Results.Json(new { status = "ok", time = DateTime.Ut
 
 app.MapGet("/version", (IConfiguration config) => Results.Json(new {
     name = config["App:Name"] ?? "IsLabApp",
-    version = config["App:Version"] ?? "0.1.0-lab4"
+    version = config["App:Version"] ?? "0.1.0-lab11"
 }));
 
 // --- Задание 4: Заметки (CRUD) ---
